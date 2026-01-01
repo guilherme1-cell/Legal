@@ -19,8 +19,8 @@ local ultimoClique = 0
 local COOLDOWN = 0.03 -- 30ms
 
 -- RANGE fixo
-local RANGE = 30
-local RANGE_T = 30
+local RANGE = 32
+local RANGE_T = 32
 
 -- ESPECIAIS: só pallet
 local ESPECIAIS = {
