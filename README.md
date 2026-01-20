@@ -16,7 +16,7 @@ local clickedT = false
 local lastEspecial = nil
 
 local ultimoClique = 0
-local COOLDOWN = 0.03 -- 30ms
+local COOLDOWN = 0.005 -- 5ms (igual ao VirtualUser super rápido)
 
 -- RANGE fixo
 local RANGE = 32
@@ -93,7 +93,7 @@ local function click()
     local agora = tick()
     if agora - ultimoClique < COOLDOWN then return end
     ultimoClique = agora
-    mouse1click()
+    mouse1click() -- dispara clique real
 end
 
 -- Tentar clicar em humanoid
