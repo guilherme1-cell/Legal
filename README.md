@@ -2,6 +2,7 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local LocalPlayer = Players.LocalPlayer
 local Camera = Workspace.CurrentCamera
@@ -16,7 +17,7 @@ local clickedT = false
 local lastEspecial = nil
 
 local ultimoClique = 0
-local COOLDOWN = 0.005 -- 5ms (igual ao VirtualUser super rápido)
+local COOLDOWN = 0.005 -- 5ms
 
 -- RANGE fixo
 local RANGE = 32
@@ -47,7 +48,7 @@ LocalPlayer.CharacterAdded:Connect(function()
 end)
 updateFilter()
 
--- Detectar alvo humanoid inteiro (NPC ou player)
+-- Detectar alvo humanoid inteiro
 local function pegarAlvoNaMira()
     local origin = Camera.CFrame.Position
     local direction = Camera.CFrame.LookVector * RANGE
@@ -62,7 +63,7 @@ local function pegarAlvoNaMira()
 
     local hum = model:FindFirstChildWhichIsA("Humanoid")
     if hum and hum.Health > 0 then
-        return model -- humanoid inteiro
+        return model
     end
 
     return nil
@@ -88,12 +89,21 @@ local function pegarEspecialNaMira()
     return nil
 end
 
+-- Criar ou pegar BindableEvent
+local clickEvent = ReplicatedStorage:FindFirstChild("ClickEvent") or Instance.new("BindableEvent")
+clickEvent.Name = "ClickEvent"
+clickEvent.Parent = ReplicatedStorage
+
 -- Clique usando mouse1click com cooldown
 local function click()
     local agora = tick()
     if agora - ultimoClique < COOLDOWN then return end
     ultimoClique = agora
+
     mouse1click() -- dispara clique real
+
+    -- Dispara evento para overlay/escuta
+    clickEvent:Fire()
 end
 
 -- Tentar clicar em humanoid
@@ -103,7 +113,7 @@ local function tentar()
         last = nil
         return false
     end
-    if alvo == last then return false end -- evita double click
+    if alvo == last then return false end
     last = alvo
     click()
     return true
@@ -116,7 +126,7 @@ local function tentarEspecial()
         lastEspecial = nil
         return false
     end
-    if alvo == lastEspecial then return false end -- evita double click
+    if alvo == lastEspecial then return false end
     lastEspecial = alvo
     click()
     return true
